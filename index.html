@@ -9,7 +9,6 @@
         :root { --aia-red: #d31145; --navy: #2c3e50; --gold: #ffbc00; --emerald: #2ecc71; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 15px; background-color: #f4f7f6; color: #333; font-size: 13px; }
         
-        /* Secure Password Overlay */
         #authOverlay { position: fixed; inset: 0; background: var(--navy); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .auth-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 350px; }
         #errorMsg { color: var(--aia-red); font-size: 11px; margin-top: 10px; font-weight: bold; display: none; }
@@ -25,40 +24,33 @@
         label { font-weight: bold; margin-bottom: 5px; font-size: 0.85em; color: var(--aia-red); }
         input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95em; }
         
-        /* Withdrawal Table Style */
-        .ls-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: white; font-size: 11px; border: 1px solid #eee; }
-        .ls-table th { background: var(--aia-red); color: white; padding: 6px; font-weight: 600; text-align: left; }
-        .ls-table td { padding: 6px; border: 1px solid #eee; }
-        .btn-add-ls { background: var(--emerald); color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 10px; width: 100%; font-weight: bold; transition: 0.2s; }
-        .btn-add-ls:hover { background: #27ae60; }
+        /* Column Manager Styling */
+        .col-manager-container { margin-top: 10px; position: relative; }
+        .col-dropdown-btn { background: #f8f9fa; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; color: #444; display: inline-flex; align-items: center; gap: 5px; }
+        .col-box { position: absolute; top: 105%; left: 0; z-index: 100; background: white; border: 1px solid #ccc; border-radius: 4px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; width: 450px; }
+        .col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
+        .col-grid label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--navy); font-size: 11px; padding: 2px 0; }
+        .col-grid input { width: 16px; height: 16px; accent-color: var(--aia-red); cursor: pointer; }
+
+        .ls-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: white; font-size: 11px; }
+        .ls-table th { background: var(--aia-red); color: white; padding: 5px; text-align: left; }
+        .ls-table td { padding: 5px; border: 1px solid #eee; }
+        .btn-add-ls { background: var(--emerald); color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 10px; width: 100%; font-weight: bold; }
         .btn-del { border: none; background: none; color: #e74c3c; cursor: pointer; font-weight: bold; font-size: 14px; }
 
         .stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--navy); color: white; padding: 12px; border-radius: 6px; text-align: center; border-bottom: 3px solid var(--gold); }
         .stat-val { font-size: 1.15em; font-weight: bold; color: var(--gold); display: block; margin-top: 5px; }
-        .cn-sub { font-size: 0.75em; display: block; opacity: 0.9; margin-bottom: 2px; font-weight: normal; }
+        .cn-sub { font-size: 0.75em; display: block; opacity: 0.9; margin-bottom: 2px; }
         
-        /* Main Table Styling */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
         th { background: var(--aia-red); color: white; padding: 12px 6px; text-align: left; position: sticky; top: 0; }
         td { padding: 8px 6px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
-        tbody tr:hover { background-color: #f9f9f9; }
-        .row-selected { background-color: #e3f2fd !important; font-weight: bold; border-left: 4px solid #2196f3; }
-        .switch-point { background-color: #fffde7 !important; border-left: 4px solid var(--gold); font-weight: bold; }
+        .row-selected { background-color: #e3f2fd !important; font-weight: bold; }
+        .switch-point { background-color: #fffde7 !important; border-left: 5px solid var(--gold); }
         .total-row { background: #fdf2f4; font-weight: bold; color: var(--aia-red); }
 
-        .disclaimer-box { 
-            margin: 30px auto 10px auto; 
-            padding: 15px; 
-            max-width: 1000px; 
-            font-size: 9.5px; 
-            color: #666; 
-            text-align: center; 
-            line-height: 1.6; 
-            border: 1.5px solid var(--aia-red); 
-            border-radius: 8px; 
-            background-color: #fcfcfc; 
-        }
+        .disclaimer-box { margin: 30px auto 10px auto; padding: 15px; max-width: 1000px; font-size: 9.5px; color: #666; text-align: center; line-height: 1.6; border: 1.5px solid var(--aia-red); border-radius: 8px; background-color: #fcfcfc; }
         .hidden { display: none !important; }
         @media print { .no-print { display: none !important; } .card { box-shadow: none; border: none; } }
     </style>
@@ -67,11 +59,11 @@
 
 <div id="authOverlay">
     <div class="auth-box">
-        <h2 style="color:var(--aia-red); margin-top:0;">Wesion Secure Access</h2>
+        <h2 style="color:var(--aia-red);">Wesion Secure Access</h2>
         <p style="font-size: 12px; color: #666;">Enter password to unlock AWV Strategic Tool</p>
         <input type="password" id="passInput" placeholder="Password" style="width: 220px; padding: 12px; margin-bottom: 10px; text-align: center; border: 1px solid #ddd; border-radius: 4px;">
         <br>
-        <button class="btn-pdf" style="width: 245px; background: var(--aia-red); color:white; border:none; padding:12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="checkPass()">Unlock / 解锁</button>
+        <button style="width: 245px; background: var(--aia-red); color:white; border:none; padding:12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="checkPass()">Unlock / 解锁</button>
         <div id="errorMsg">Incorrect password. Please try again.</div>
     </div>
 </div>
@@ -80,10 +72,10 @@
     <div id="pdfContent">
         <div class="header-section">
             <div>
-                <div style="color: var(--aia-red); font-weight: bold; font-size: 10px; letter-spacing: 0.5px;">PRIVATE & CONFIDENTIAL - FOR INTERNAL USE ONLY / 内部传阅</div>
+                <div style="color: var(--aia-red); font-weight: bold; font-size: 10px;">PRIVATE & CONFIDENTIAL - FOR INTERNAL USE ONLY / 内部传阅</div>
                 <h1 style="color:var(--aia-red); margin:5px 0; font-size: 1.8em;">AIA Wealth Venture (AWV)</h1>
                 <div style="font-size: 11px; color: #666; margin-top: 2px;">Report Generated: <span id="displayDate"></span></div>
-                <p style="margin:5px 0;"><input type="text" id="clientName" value="VALUED CLIENT" style="border:none; border-bottom:1.1px solid #ccc; font-weight:bold; width:220px; font-size:1.15em;"></p>
+                <p style="margin:5px 0;"><input type="text" id="clientName" value="VALUED CLIENT" style="border:none; border-bottom:1px solid #ccc; font-weight:bold; width:220px; font-size:1.15em;"></p>
             </div>
             <div class="no-print" style="display:flex; gap:10px; align-self: center;">
                 <button class="btn-clear" onclick="location.reload()">Clear All / 重置</button>
@@ -105,17 +97,33 @@
                     </select>
                 </div>
                 <div id="switchGroup" class="input-group hidden"><label>Switch at Age / 切换年龄</label><input type="number" id="switchAge" value="65" oninput="calc()"></div>
+                
+                <div class="col-manager-container">
+                    <div class="col-dropdown-btn" onclick="toggleColBox(event)">表格列选择 / Table Columns Manager</div>
+                    <div class="col-box" id="colBox" onclick="event.stopPropagation()">
+                        <div class="col-grid">
+                            <label><input type="checkbox" checked data-col="2"> Premium / 保费</label>
+                            <label><input type="checkbox" checked data-col="3"> Welcome Bonus / 开户奖金</label>
+                            <label><input type="checkbox" checked data-col="4"> Invest/Perf Bonus / 投资奖金</label>
+                            <label><input type="checkbox" checked data-col="5"> Charges / 费用</label>
+                            <label><input type="checkbox" checked data-col="6"> Div & WD / 分红与提取</label>
+                            <label><input type="checkbox" checked data-col="7"> Policy Val / 保单价值</label>
+                            <label><input type="checkbox" checked data-col="8"> Total Benefit / 总利益</label>
+                            <label><input type="checkbox" checked data-col="9"> Return % / 回报率</label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="withdraw-box">
                 <label>2. Withdrawal Module / 提取模块</label>
                 <table class="ls-table">
-                    <thead><tr><th>Age / 年龄</th><th>Lump Sum / 金额</th><th></th></tr></thead>
+                    <thead><tr><th>Age</th><th>Amount (S$)</th><th></th></tr></thead>
                     <tbody id="lsBody"></tbody>
                 </table>
                 <button class="btn-add-ls" onclick="addLsRow()">+ Add Lump Sum / 添加单笔提取</button>
-                <hr style="border:0; border-top:1.1px solid #e5e5e5; margin:12px 0;">
-                <div class="input-group"><label>Periodic Withdrawal / 定期年度提取 (S$)</label><input type="number" id="pAmt" value="0" oninput="calc()"></div>
+                <hr style="border:0; border-top:1px solid #ddd; margin:10px 0;">
+                <div class="input-group"><label>Periodic Withdrawal / 定期提取 (S$ p.a.)</label><input type="number" id="pAmt" value="0" oninput="calc()"></div>
                 <div style="display: flex; gap: 8px;">
                     <div class="input-group" style="flex:1"><label>From Age</label><input type="number" id="pStart" value="65" oninput="calc()"></div>
                     <div class="input-group" style="flex:1"><label>To Age</label><input type="number" id="pEnd" value="85" oninput="calc()"></div>
@@ -124,19 +132,19 @@
 
             <div class="market-box">
                 <label>3. Market Assumptions / 市场假设</label>
-                <div class="input-group"><label>Gross Accum. Return / 累计期收益率 (%)</label><input type="number" id="rIn" value="8.0" step="0.5" oninput="calc()"></div>
-                <div class="input-group"><label>Gross Income Return / 分红期收益率 (%)</label><input type="number" id="postRIn" value="5.0" step="0.5" oninput="calc()"></div>
-                <div class="input-group"><label>Manual AMC / 基金管理费 (%)</label><input type="number" id="fmcIn" value="1.45" step="0.05" oninput="calc()"></div>
+                <div class="input-group"><label>Gross Accum. Return / 累计期收益 (%)</label><input type="number" id="rIn" value="8.0" step="0.5" oninput="calc()"></div>
+                <div class="input-group"><label>Gross Income Return / 分红期收益 (%)</label><input type="number" id="postRIn" value="8.0" step="0.5" oninput="calc()"></div>
+                <div class="input-group"><label>Manual FMC/AMC / 管理费 (%)</label><input type="number" id="fmcIn" value="1.45" step="0.05" oninput="calc()"></div>
                 <div class="input-group"><label>Expected Div. Yield / 预期分红率 (%)</label><input type="number" id="dIn" value="7.0" step="0.1" oninput="calc()"></div>
             </div>
         </div>
 
         <div class="stats-bar">
             <div class="stat-card"><span class="cn-sub">Total Paid / 总已付保费</span><span class="stat-val" id="sOut">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Policy Value / 当前保单价值</span><span class="stat-val" id="sVal">$0</span></div>
+            <div class="stat-card"><span class="cn-sub">Policy Value / 当前价值</span><span class="stat-val" id="sVal">$0</span></div>
             <div class="stat-card"><span class="cn-sub">Total Payouts / 累计提取</span><span class="stat-val" id="sCash">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Total Benefit / 总经济利益</span><span class="stat-val" id="sTot">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Return % / 总回报率</span><span class="stat-val" id="sPerc">0%</span></div>
+            <div class="stat-card"><span class="cn-sub">Total Benefit / 总利益</span><span class="stat-val" id="sTot">$0</span></div>
+            <div class="stat-card"><span class="cn-sub">Return % / 回报率</span><span class="stat-val" id="sPerc">0%</span></div>
         </div>
 
         <canvas id="mainChart" style="max-height: 290px; margin-bottom: 20px;"></canvas>
@@ -145,13 +153,14 @@
             <thead>
                 <tr>
                     <th>Year / Age<br>年份 / 年龄</th>
-                    <th>Premium<br>缴付保费</th>
-                    <th>Bonuses (+)<br>奖金</th>
-                    <th>Charges (-)<br>费用</th>
-                    <th>Div / WD<br>分红与提取</th>
-                    <th>Policy Val<br>保单价值</th>
-                    <th>Total Benefit<br>总利益</th>
-                    <th>Return %<br>回报率</th>
+                    <th data-col="2">Premium<br>保费</th>
+                    <th data-col="3">Welcome Bonus<br>开户奖金</th>
+                    <th data-col="4">Invest/Perf Bonus<br>投资表现奖金</th>
+                    <th data-col="5">Charges<br>费用</th>
+                    <th data-col="6">Div / WD<br>提取额</th>
+                    <th data-col="7">Policy Val<br>保单价值</th>
+                    <th data-col="8">Total Benefit<br>总利益</th>
+                    <th data-col="9">Return %<br>回报率</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -169,10 +178,8 @@
     const SECRET_CODE = "wesion7";
     let chart;
 
-    // Date and Password Setup
     function init() {
-        const today = new Date();
-        document.getElementById('displayDate').innerText = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        document.getElementById('displayDate').innerText = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         toggleInputs();
     }
 
@@ -186,15 +193,25 @@
             calc();
         } else {
             document.getElementById('errorMsg').style.display = 'block';
-            passIn.value = "";
-            passIn.focus();
+            passIn.value = ""; passIn.focus();
         }
+    }
+
+    function toggleColBox(e) { e.stopPropagation(); const box = document.getElementById('colBox'); box.style.display = box.style.display === 'block' ? 'none' : 'block'; }
+    window.onclick = () => document.getElementById('colBox').style.display = 'none';
+    document.querySelectorAll('#colBox input').forEach(cb => { cb.addEventListener('change', () => { updateTableColumns(); calc(); }); });
+
+    function updateTableColumns() {
+        document.querySelectorAll('#colBox input').forEach(cb => {
+            const colIdx = cb.getAttribute('data-col');
+            document.querySelectorAll(`[data-col="${colIdx}"]`).forEach(c => c.style.display = cb.checked ? '' : 'none');
+        });
     }
 
     function addLsRow() {
         const row = document.getElementById('lsBody').insertRow();
-        row.innerHTML = `<td><input type="number" class="ls-age" value="65" oninput="calc()" style="width:50px;"></td>
-                         <td><input type="number" class="ls-val" value="10000" oninput="calc()" style="width:100px;"></td>
+        row.innerHTML = `<td><input type="number" class="ls-age" value="65" oninput="calc()" style="width:45px;"></td>
+                         <td><input type="number" class="ls-val" value="10000" oninput="calc()" style="width:85px;"></td>
                          <td><button class="btn-del" onclick="this.parentElement.parentElement.remove(); calc();">×</button></td>`;
         calc();
     }
@@ -205,7 +222,6 @@
         calc();
     }
 
-    // AWV Bonus Logic [cite: 151, 160-163, 318, 323]
     function getWelcomeRate(p, y) {
         if (y > 5) return 0;
         if (p >= 12000) return [0.03, 0.05, 0.07, 0.09, 0.11][y-1];
@@ -227,7 +243,7 @@
         let lsMap = {};
         document.querySelectorAll('#lsBody tr').forEach(row => {
             const age = row.querySelector('.ls-age').value;
-            if (age) lsMap[age] = parseFloat(row.querySelector('.ls-val').value) || 0;
+            if (age) lsMap[age] = (lsMap[age] || 0) + (parseFloat(row.querySelector('.ls-val').value) || 0);
         });
 
         let lbs = [], pVals = [], tBenefits = [], h = "", tPaid = 0, tCash = 0, curV = 0, terminated = false;
@@ -237,10 +253,9 @@
             let age = startAge + y;
             if (age > 100) break;
 
-            let curP = (y <= 8) ? p : 0; // AWV 8-Pay Premium Term [cite: 141, 157]
+            let curP = (y <= 8) ? p : 0;
             tPaid += curP; curV += curP;
 
-            // AWV Bonuses [cite: 142-144]
             let wb = p * getWelcomeRate(p, y);
             let ib = (y >= 9 && y <= 12) ? (p * 0.025) : 0;
             let pb = (y >= 9) ? (curV * 0.003) : 0;
@@ -249,11 +264,9 @@
             let netR = (strat === 'switch' && age >= sAge) ? r2 : r1;
             curV *= (1 + netR - fmc);
 
-            // AWV Supplementary Charge [cite: 146, 175]
             let sc = (y <= 10) ? (curV * 0.036) : 0;
             curV -= sc;
 
-            // Advanced Withdrawal Module
             let cashOut = 0;
             if (strat !== 'reinvest' && (strat === 'cash' || (strat === 'switch' && age >= sAge))) { cashOut = Math.floor(curV * divYield); }
             if (lsMap[age]) cashOut += lsMap[age];
@@ -265,13 +278,15 @@
             lbs.push(age); pVals.push(Math.round(curV)); tBenefits.push(Math.round(curV + tCash));
 
             h += `<tr onclick="this.classList.toggle('row-selected')" class="${age === sAge ? 'switch-point' : ''}">
-                <td>${y} / ${age}</td><td>$${curP.toLocaleString()}</td>
-                <td style="color:green">+$${Math.round(wb+ib+pb).toLocaleString()}</td>
-                <td style="color:var(--aia-red)">-$${Math.round(sc).toLocaleString()}</td>
-                <td style="color:var(--emerald)">$${cashOut.toLocaleString()}</td>
-                <td>$${Math.round(curV).toLocaleString()}</td>
-                <td class="total-row">$${Math.round(curV + tCash).toLocaleString()}</td>
-                <td>${terminated ? '❌ Plan Ends' : Math.round((curV+tCash)/tPaid*100)+'%'}</td></tr>`;
+                <td>${y} / ${age}</td>
+                <td data-col="2">$${curP.toLocaleString()}</td>
+                <td data-col="3">$${Math.round(wb).toLocaleString()}</td>
+                <td data-col="4">$${Math.round(ib+pb).toLocaleString()}</td>
+                <td data-col="5" style="color:var(--aia-red)">-$${Math.round(sc).toLocaleString()}</td>
+                <td data-col="6" style="color:var(--emerald)">$${cashOut.toLocaleString()}</td>
+                <td data-col="7">$${Math.round(curV).toLocaleString()}</td>
+                <td data-col="8" class="total-row">$${Math.round(curV + tCash).toLocaleString()}</td>
+                <td data-col="9">${terminated ? 'Plan Ends' : Math.round((curV+tCash)/tPaid*100)+'%'}</td></tr>`;
         }
 
         document.getElementById('tableBody').innerHTML = h;
@@ -279,8 +294,9 @@
         document.getElementById('sVal').innerText = "$" + Math.round(curV).toLocaleString();
         document.getElementById('sCash').innerText = "$" + tCash.toLocaleString();
         document.getElementById('sTot').innerText = "$" + Math.round(curV + tCash).toLocaleString();
-        document.getElementById('sPerc').innerText = tPaid > 0 ? Math.round((curV + tCash)/tPaid*100) + "%" : "0%";
+        document.getElementById('sPerc').innerText = tPaid > 0 ? Math.round((curV+tCash)/tPaid*100) + "%" : "0%";
 
+        updateTableColumns();
         if (chart) chart.destroy();
         chart = new Chart(document.getElementById('mainChart'), { 
             type: 'line', 
@@ -297,7 +313,7 @@
     }
 
     function downloadPDF() {
-        const opt = { margin: 0.2, filename: `AWV_Wesion_Advisor.pdf`, jsPDF: { format: 'a4', orientation: 'landscape' } };
+        const opt = { margin: 0.2, filename: `AWV_Report_${document.getElementById('clientName').value}.pdf`, jsPDF: { format: 'a4', orientation: 'landscape' } };
         html2pdf().set(opt).from(document.getElementById('pdfContent')).save();
     }
 </script>
