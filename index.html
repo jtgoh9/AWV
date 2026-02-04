@@ -890,7 +890,7 @@
                             <th class="col-charges">Charges<br>费用</th>
                             <th class="col-dividend hidden">Dividend<br>分红</th>
                             <th class="col-withdrawal hidden">Withdrawal<br>提取</th>
-                            <th>Account Value<br>账户价值</th>
+                            <th class="col-account-value-header">Account Value<br>账户价值</th>
                             <th class="col-comparison hidden">Comp. Value<br>对比场景</th>
                             <th>Total Benefit<br>总利益</th>
                             <th style="width: 100px;">Return %<br>回报率</th>
@@ -1237,6 +1237,10 @@ function calculateProjection() {
 
         // Generate table row with Click-to-highlight functionality
         const isHighlightRow = (strategy === 'switch' && currentAge === switchAge);
+        
+        // If policy value equals total benefit, only show total benefit column
+        const showSeparateColumns = displayPolicyValue !== displayTotalBenefit;
+        
         tableHTML += `
             <tr class="${isHighlightRow ? 'highlight-switch' : ''}" onclick="this.classList.toggle('row-click-highlight')">
                 <td style="font-weight:700;color:var(--navy)">${year}/${currentAge}</td>
@@ -1246,7 +1250,7 @@ function calculateProjection() {
                 <td class="td-charges" style="color:var(--aia-red)">-${formatCurrency(suppCharge)}</td>
                 <td class="col-dividend" style="color:var(--emerald);font-weight:600">${formatCurrency(yearDividend)}</td>
                 <td class="col-withdrawal" style="color:var(--amber);font-weight:600">${formatCurrency(yearWithdrawal)}</td>
-                <td style="font-weight:700;color:var(--aia-red)">${formatCurrency(displayPolicyValue)}</td>
+                <td class="col-account-value" style="font-weight:700;color:var(--aia-red);${!showSeparateColumns ? 'display:none;' : ''}">${formatCurrency(displayPolicyValue)}</td>
                 <td class="col-comparison comp-col">${formatCurrency(displayCompValue)}</td>
                 <td class="total-benefit-col">${formatCurrency(displayTotalBenefit)}</td>
                 <td style="font-weight:700;color:var(--navy)">${terminated ? '❌ Term.' : returnPct + '%'}</td>
@@ -1268,6 +1272,26 @@ function calculateProjection() {
     document.getElementById('statWithdrawals').textContent = formatCurrency(totalWithdrawals);
     document.getElementById('statTotalBenefit').textContent = formatCurrency(finalTotalBenefit);
     document.getElementById('statMultiplier').textContent = multiplier + 'x';
+
+    // Hide stats cards if value is 0
+    document.querySelectorAll('.stat-card').forEach((card, index) => {
+        const valueElement = card.querySelector('.stat-value');
+        const value = valueElement.textContent;
+        // Hide if value is $0 or 0x or 0%
+        if (value === '$0' || value === '0x' || value === '0%') {
+            card.style.display = 'none';
+        } else {
+            card.style.display = 'block';
+        }
+    });
+
+    // Check if policy value equals total benefit across all rows
+    const valuesAreSame = finalPolicyValue === finalTotalBenefit && !hasDividendData && !hasWithdrawalData;
+    
+    // Hide Account Value column header if values are the same
+    document.querySelectorAll('.col-account-value-header').forEach(el => {
+        el.style.display = valuesAreSame ? 'none' : '';
+    });
 
     // Smart Auto-Hide: These columns will only appear if there is a non-zero value
     document.querySelectorAll('.col-dividend').forEach(el => {
