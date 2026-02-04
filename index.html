@@ -769,8 +769,7 @@
                     </button>
                     <div id="colManagerContent" class="col-manager-content">
                         <label><input type="checkbox" class="col-toggle" data-col="premium" checked> Premium / 保费</label>
-                        <label><input type="checkbox" class="col-toggle" data-col="welcome" checked> Welcome Bonus / 开户奖金</label>
-                        <label><input type="checkbox" class="col-toggle" data-col="invest" checked> Investment Bonus / 投资奖金</label>
+                        <label><input type="checkbox" class="col-toggle" data-col="bonuses" checked> Bonuses / 奖金</label>
                         <label><input type="checkbox" class="col-toggle" data-col="charges" checked> Charges / 费用</label>
                     </div>
                 </div>
@@ -885,8 +884,7 @@
                         <tr id="tableHeaderRow">
                             <th style="width: 90px;">Year/Age<br>年份/年龄</th>
                             <th class="col-premium">Premium<br>保费</th>
-                            <th class="col-welcome">Welcome<br>Bonus<br>开户奖金</th>
-                            <th class="col-invest">Investment<br>Bonus<br>投资奖金</th>
+                            <th class="col-bonuses">Bonuses<br>奖金</th>
                             <th class="col-charges">Charges<br>费用</th>
                             <th class="col-dividend hidden">Dividend<br>分红</th>
                             <th class="col-withdrawal hidden">Withdrawal<br>提取</th>
@@ -1241,12 +1239,14 @@ function calculateProjection() {
         // If policy value equals total benefit, only show total benefit column
         const showSeparateColumns = displayPolicyValue !== displayTotalBenefit;
         
+        // Combine all bonuses
+        const totalBonuses = welcome + totalInvestBonus;
+        
         tableHTML += `
             <tr class="${isHighlightRow ? 'highlight-switch' : ''}" onclick="this.classList.toggle('row-click-highlight')">
                 <td style="font-weight:700;color:var(--navy)">${year}/${currentAge}</td>
                 <td class="td-premium" style="color:var(--navy);font-weight:600">${formatCurrency(yearPremium)}</td>
-                <td class="td-welcome" style="color:var(--emerald);font-weight:600">${formatCurrency(welcome)}</td>
-                <td class="td-invest" style="color:var(--emerald);font-weight:600">${formatCurrency(totalInvestBonus)}</td>
+                <td class="td-bonuses" style="color:var(--emerald);font-weight:600">${formatCurrency(totalBonuses)}</td>
                 <td class="td-charges" style="color:var(--aia-red)">-${formatCurrency(suppCharge)}</td>
                 <td class="col-dividend" style="color:var(--emerald);font-weight:600">${formatCurrency(yearDividend)}</td>
                 <td class="col-withdrawal" style="color:var(--amber);font-weight:600">${formatCurrency(yearWithdrawal)}</td>
