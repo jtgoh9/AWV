@@ -2,341 +2,1431 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wesion Strategic Wealth Advisor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIA Wealth Venture - Strategic Wealth Advisor</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --aia-red: #d31145; --navy: #2c3e50; --gold: #ffbc00; --emerald: #10b981; --amber: #f39c12; --slate: #f8fafc; --comp-blue: #e3f2fd; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 15px; background-color: var(--slate); color: #333; font-size: 13px; }
-        
-        /* 1. Security Layer */
-        #authOverlay { position: fixed; inset: 0; background: var(--navy); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .auth-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 350px; }
-        #errorMsg { color: var(--aia-red); font-size: 11px; margin-top: 10px; font-weight: bold; display: none; }
+        :root {
+            --aia-red: #d31145;
+            --navy: #2c3e50;
+            --gold: #ffbc00;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-500: #3b82f6;
+            --pink-bg: #fffafb;
+        }
 
-        .card { max-width: 1550px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        
-        /* 2. Header Section */
-        .header-section { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--aia-red); padding-bottom: 10px; margin-bottom: 20px; }
-        
-        /* 3. Input Ecosystem */
-        .input-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .setup-box, .market-box { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 6px; }
-        .withdraw-box { background: #fffafb; border: 1.5px solid var(--aia-red); padding: 15px; border-radius: 6px; }
-        .input-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-        label { font-weight: bold; margin-bottom: 5px; font-size: 0.85em; color: var(--aia-red); }
-        input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95em; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        /* Column Manager Dropdown */
-        .col-manager-container { margin-top: 10px; position: relative; }
-        .col-dropdown-btn { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; }
-        .col-box { position: absolute; top: 105%; left: 0; z-index: 100; background: white; border: 1px solid #ccc; border-radius: 4px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; width: 480px; }
-        .col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--slate-50) 0%, var(--slate-200) 100%);
+            color: var(--navy);
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-        /* Withdrawal Table */
-        .ls-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: white; font-size: 11px; }
-        .ls-table th { background: var(--aia-red); color: white; padding: 5px; text-align: left; }
-        .btn-add-ls { background: var(--emerald); color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 10px; width: 100%; font-weight: bold; }
+        /* ==================== AUTHENTICATION OVERLAY (The Gatekeeper) ==================== */
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--navy) 0%, #1a2838 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-in;
+        }
 
-        /* 4. Statistic Bar */
-        .stats-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--navy); color: white; padding: 12px; border-radius: 6px; text-align: center; border-bottom: 3px solid var(--gold); }
-        .stat-val { font-size: 1.15em; font-weight: bold; color: var(--gold); display: block; margin-top: 5px; }
-        .cn-sub { font-size: 0.75em; display: block; opacity: 0.9; margin-bottom: 2px; }
+        .auth-box {
+            background: white;
+            padding: 50px 45px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            width: 420px;
+            animation: slideUp 0.5s ease-out;
+        }
 
-        /* 5. Table Engineering (The Data Core) */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; border: 1px solid #e2e8f0; }
-        th { background: var(--aia-red); color: white; padding: 12px 6px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; }
-        td { padding: 10px 6px; border-bottom: 1px solid #edf2f7; text-align: center; cursor: pointer; transition: 0.2s; }
-        tbody tr:nth-child(even) { background-color: #f8fafc; }
-        .row-selected { background-color: #dbeafe !important; font-weight: bold; }
-        .total-row-cell { background: #fdf2f4; font-weight: bold; color: var(--aia-red); }
-        .comp-col { background-color: var(--comp-blue); font-weight: bold; }
+        .auth-box h2 {
+            color: var(--aia-red);
+            margin-bottom: 12px;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
 
-        /* 6. Disclaimer */
-        .disclaimer-box { margin: 30px auto 10px auto; padding: 15px; max-width: 1000px; font-size: 9.5px; color: #666; text-align: center; line-height: 1.6; border: 1px solid #ddd; border-radius: 8px; background-color: #fcfcfc; }
-        .hidden { display: none !important; }
-        
-        @media print { .no-print { display: none !important; } .card { box-shadow: none; border: none; padding: 0; } }
+        .auth-box p {
+            font-size: 14px;
+            color: var(--slate-600);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        #passInput {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            text-align: center;
+            border: 2px solid var(--slate-200);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.3s;
+        }
+
+        #passInput:focus {
+            border-color: var(--aia-red);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(211, 17, 69, 0.1);
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: var(--aia-red);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .auth-btn:hover {
+            background: #b80e39;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(211, 17, 69, 0.3);
+        }
+
+        #errorMsg {
+            color: var(--aia-red);
+            font-size: 13px;
+            margin-top: 15px;
+            visibility: hidden;
+            font-weight: 600;
+        }
+
+        /* ==================== MAIN CARD ==================== */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* ==================== HEADER SECTION (Branding) ==================== */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid var(--aia-red);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .confidential-tag {
+            color: var(--aia-red);
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--navy);
+            font-size: 42px;
+            font-weight: 900;
+            margin: 8px 0;
+            letter-spacing: -1px;
+        }
+
+        .report-date {
+            font-size: 13px;
+            color: var(--slate-600);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .client-name-group {
+            margin-top: 15px;
+        }
+
+        .client-label {
+            font-size: 12px;
+            color: var(--slate-600);
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        #clientName {
+            border: none;
+            border-bottom: 2px solid var(--slate-300);
+            font-weight: 800;
+            width: 320px;
+            font-size: 18px;
+            color: var(--navy);
+            padding: 4px 0;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        #clientName:focus {
+            outline: none;
+            border-bottom-color: var(--aia-red);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: var(--slate-100);
+            color: var(--slate-700);
+            border: 1px solid var(--slate-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--slate-200);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--aia-red);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #b80e39;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(211, 17, 69, 0.3);
+        }
+
+        /* ==================== INPUT ECOSYSTEM (3-Column Grid) ==================== */
+        .input-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-box {
+            background: white;
+            border: 2px solid var(--slate-200);
+            padding: 24px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .input-box:hover {
+            border-color: var(--slate-300);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-box-header {
+            font-weight: 800;
+            margin-bottom: 18px;
+            font-size: 13px;
+            color: var(--aia-red);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .withdrawal-box {
+            background: var(--pink-bg);
+            border-color: #fed7aa;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--slate-700);
+            display: block;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--slate-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: var(--aia-red);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(211, 17, 69, 0.1);
+        }
+
+        .input-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Column Manager */
+        .col-manager-btn {
+            background: var(--slate-100);
+            border: 1px solid var(--slate-300);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--slate-700);
+            font-weight: 600;
+            margin-top: 12px;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        .col-manager-btn:hover {
+            background: var(--slate-200);
+        }
+
+        .col-manager-content {
+            display: none;
+            margin-top: 12px;
+            padding: 18px;
+            background: white;
+            border: 2px solid var(--slate-200);
+            border-radius: 10px;
+        }
+
+        .col-manager-content label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--navy);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .col-manager-content input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        /* Lump Sum Table */
+        .ls-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        .ls-table th {
+            background: var(--slate-100);
+            color: var(--slate-700);
+            padding: 10px;
+            font-weight: 700;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .ls-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--slate-100);
+        }
+
+        .ls-table input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--slate-300);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        .ls-delete-btn {
+            border: none;
+            background: none;
+            color: var(--aia-red);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 0;
+            transition: all 0.2s;
+        }
+
+        .ls-delete-btn:hover {
+            color: #b80e39;
+            transform: scale(1.2);
+        }
+
+        .add-ls-btn {
+            background: var(--emerald);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .add-ls-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .input-divider {
+            border: 0;
+            border-top: 1px solid var(--slate-200);
+            margin: 18px 0;
+        }
+
+        /* Comparison Checkbox */
+        .comparison-toggle {
+            cursor: pointer;
+            color: var(--navy);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .comparison-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* ==================== STATISTIC BAR (The Big Numbers) ==================== */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a2838 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-bottom: 4px solid var(--gold);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .stat-label-cn {
+            font-size: 10px;
+            display: block;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--gold);
+            display: block;
+            margin-top: 6px;
+        }
+
+        /* ==================== CHART DESIGN ==================== */
+        #mainChart {
+            max-height: 350px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--slate-100);
+        }
+
+        /* ==================== TABLE ENGINEERING (The Data Core) ==================== */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 2px solid var(--slate-200);
+            margin-bottom: 30px;
+        }
+
+        #mainTable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: white;
+        }
+
+        #mainTable thead th {
+            background: var(--aia-red);
+            color: white;
+            padding: 14px 10px;
+            font-weight: 700;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        #mainTable tbody td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--slate-100);
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        #mainTable tbody tr:nth-child(even) {
+            background-color: var(--slate-50);
+        }
+
+        #mainTable tbody tr:hover {
+            background-color: var(--blue-50);
+            cursor: pointer;
+        }
+
+        .row-click-highlight {
+            background-color: var(--blue-100) !important;
+        }
+
+        .highlight-switch {
+            background-color: #fef9c3 !important;
+            font-weight: bold;
+            border-left: 4px solid var(--gold);
+        }
+
+        .total-benefit-col {
+            font-weight: 800;
+            color: var(--aia-red);
+        }
+
+        .comp-col {
+            color: var(--blue-500);
+            font-style: italic;
+            background: var(--blue-50) !important;
+        }
+
+        /* ==================== DISCLAIMER (Centered) ==================== */
+        .disclaimer {
+            margin-top: 30px;
+            padding: 24px;
+            background: white;
+            border: 2px solid var(--slate-200);
+            border-radius: 12px;
+            font-size: 11px;
+            text-align: center;
+            color: var(--slate-600);
+            line-height: 1.8;
+        }
+
+        .disclaimer strong {
+            color: var(--aia-red);
+            font-weight: 800;
+        }
+
+        /* ==================== UTILITY CLASSES ==================== */
+        .hidden {
+            display: none !important;
+        }
+
+        .no-print {
+            /* Hidden during PDF export */
+        }
+
+        /* ==================== ANIMATIONS ==================== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== PRINT STYLES (PDF Export Optimization) ==================== */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: none;
+                padding: 20px;
+            }
+
+            #mainChart {
+                page-break-inside: avoid;
+            }
+
+            .table-wrapper {
+                page-break-inside: auto;
+            }
+
+            #mainTable tr {
+                page-break-inside: avoid;
+            }
+
+            @page {
+                size: landscape;
+            }
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1200px) {
+            .input-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+        }
     </style>
 </head>
-<body onload="init()">
+<body>
 
+<!-- ==================== AUTHENTICATION OVERLAY (The Gatekeeper) ==================== -->
 <div id="authOverlay">
     <div class="auth-box">
-        <h2 style="color:var(--aia-red);">Wesion Secure Access</h2>
-        <p style="font-size: 12px; color: #666;">Enter password to view AWV Strategic Advisor Tool</p>
-        <input type="password" id="passInput" placeholder="Password" style="width: 220px; padding: 12px; margin-bottom: 10px; text-align: center; border: 1px solid #ddd; border-radius: 4px;">
-        <br>
-        <button style="width: 245px; background: var(--aia-red); color:white; border:none; padding:12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="checkPass()">Unlock / 解锁</button>
-        <div id="errorMsg">Incorrect password. Please try again.</div>
+        <h2>Wesion Secure Access</h2>
+        <p>Enter password to view 'AIA Wealth Venture' Advisor Tool</p>
+        <input type="password" id="passInput" placeholder="Password" autocomplete="off">
+        <button class="auth-btn" onclick="checkPassword()">Unlock Access</button>
+        <p id="errorMsg">密码错误 / Incorrect password.</p>
     </div>
 </div>
 
-<div class="card hidden" id="mainCard">
-    <div id="pdfContent">
-        <div class="header-section">
-            <div>
-                <div style="color: var(--aia-red); font-weight: bold; font-size: 10px;">PRIVATE & CONFIDENTIAL - FOR INTERNAL USE ONLY / 内部传阅</div>
-                <h1 style="color:var(--aia-red); margin:5px 0; font-size: 1.8em;">AIA Wealth Venture (AWV)</h1>
-                <div style="font-size: 11px; color: #666;">Analysis Date / 分析日期: <span id="displayDate"></span></div>
-                <p style="margin:10px 0;"><input type="text" id="clientName" value="VALUED CLIENT" style="border:none; border-bottom:1.5px solid #ccc; font-weight:bold; width:220px; font-size:1.15em; color: var(--navy);"></p>
+<!-- ==================== MAIN APPLICATION ==================== -->
+<div class="main-container hidden" id="mainCard">
+    <div class="card">
+        <div id="pdfContent">
+            <!-- HEADER SECTION (Branding) -->
+            <div class="header-section">
+                <div class="header-left">
+                    <div class="confidential-tag">PRIVATE & CONFIDENTIAL - FOR INTERNAL USE ONLY</div>
+                    <h1>AIA Wealth Venture</h1>
+                    <div class="report-date" id="reportDate"></div>
+                    <div class="client-name-group">
+                        <span class="client-label">准备用于 / Prepared for:</span>
+                        <input type="text" id="clientName" value="VALUED CLIENT">
+                    </div>
+                </div>
+                <div class="header-actions no-print">
+                    <button class="btn btn-secondary" onclick="clearAllData()">Clear All</button>
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Report</button>
+                </div>
             </div>
-            <div class="no-print" style="display:flex; gap:10px; align-self: center;">
-                <button style="background:#64748b; color:white; border:none; padding:10px 16px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="clearAll()">Clear All / 重置</button>
-                <button style="background:var(--aia-red); color:white; border:none; padding:10px 18px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="downloadPDF()">Download PDF / 下载报告</button>
-            </div>
-        </div>
 
-        <div class="input-container no-print">
-            <div class="setup-box">
-                <label>1. Policy Parameters / 保单设置 (8-Pay)</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="input-group"><label>Premium / 保费</label><input type="number" id="pIn" value="10000" oninput="calc()"></div>
-                    <div class="input-group"><label>Entry Age / 年龄</label><input type="number" id="ageIn" value="40" oninput="calc()"></div>
-                </div>
-                <div class="input-group"><label>Display Until Age / 演示至年龄</label><input type="number" id="maxAgeIn" value="80" oninput="calc()"></div>
-                
-                <div class="input-group">
-                    <label>Strategy / 分红策略</label>
-                    <select id="strat" onchange="toggleInputs()">
-                        <option value="reinvest">Reinvest All / 再投资</option>
-                        <option value="switch" selected>Accumulate then Income / 累计后分红</option>
-                        <option value="cash">Immediate Income / 即刻分红</option>
-                    </select>
-                </div>
-                <div id="switchGroup" class="input-group"><label>Switch at Age / 切换年龄</label><input type="number" id="switchAge" value="65" oninput="calc()"></div>
-                
-                <div style="margin-top:10px; background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
-                    <label style="display:flex; align-items:center; gap:8px; color:#0369a1; cursor:pointer;">
-                        <input type="checkbox" id="compEnable" onchange="calc()" style="width:auto;"> <b>开启对比 / Comparison Mode</b>
-                    </label>
-                    <div id="compGroup" class="hidden" style="margin-top:5px;">
-                        <label style="font-size:0.8em; color:#333;">Comparison Rate (%)</label>
-                        <input type="number" id="compRate" value="1.5" step="0.1" oninput="calc()">
+            <!-- INPUT ECOSYSTEM (3-Column Grid) -->
+            <div class="input-container no-print">
+                <!-- 1. Policy Parameters -->
+                <div class="input-box">
+                    <div class="input-box-header">1. 保单设置 / Policy Parameters (8-Pay)</div>
+                    <div class="input-grid-2">
+                        <div class="input-group">
+                            <label>年缴保费 / Premium (S$)</label>
+                            <input type="number" id="premiumInput" value="10000" min="0" step="1000">
+                        </div>
+                        <div class="input-group">
+                            <label>年龄 / Entry Age</label>
+                            <input type="number" id="ageInput" value="40" min="18" max="80">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>显示至年龄 / Display Until Age</label>
+                        <input type="number" id="displayUntilAge" value="80" min="50" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label>策略 / Strategy</label>
+                        <select id="strategySelect">
+                            <option value="reinvest">再投资 (累计) / Reinvest All</option>
+                            <option value="switch" selected>累计后收益 / Accumulate then Income</option>
+                            <option value="immediate">即刻提取现金 / Immediate Income</option>
+                        </select>
+                    </div>
+                    <div id="switchAgeGroup" class="input-group">
+                        <label>收益开始年龄 / Income Start Age</label>
+                        <input type="number" id="switchAgeInput" value="65" min="40" max="100">
+                    </div>
+                    
+                    <button class="col-manager-btn" onclick="toggleColumnManager()">
+                        表格显示设置 / Table Column Manager ▾
+                    </button>
+                    <div id="colManagerContent" class="col-manager-content">
+                        <label><input type="checkbox" class="col-toggle" data-col="premium" checked> Premium / 保费</label>
+                        <label><input type="checkbox" class="col-toggle" data-col="welcome" checked> Welcome Bonus / 开户奖金</label>
+                        <label><input type="checkbox" class="col-toggle" data-col="invest" checked> Investment Bonus / 投资奖金</label>
+                        <label><input type="checkbox" class="col-toggle" data-col="charges" checked> Charges / 费用</label>
                     </div>
                 </div>
 
-                <div class="col-manager-container">
-                    <div class="col-dropdown-btn" onclick="toggleColBox(event)">Table Column Settings / 表格列设置</div>
-                    <div class="col-box" id="colBox" onclick="event.stopPropagation()">
-                        <div class="col-grid">
-                            <label><input type="checkbox" checked data-col="2"> Premium / 保费</label>
-                            <label><input type="checkbox" checked data-col="3"> Welcome Bonus / 奖金</label>
-                            <label><input type="checkbox" checked data-col="4"> Invest Bonus / 奖金</label>
-                            <label><input type="checkbox" checked data-col="5"> Charges / 费用</label>
-                            <label><input type="checkbox" checked data-col="6" id="cbDiv"> Dividend / 分红</label>
-                            <label><input type="checkbox" checked data-col="7" id="cbWD"> Withdrawal / 提取</label>
-                            <label><input type="checkbox" checked data-col="8"> Policy Val / 价值</label>
-                            <label><input type="checkbox" checked data-col="9"> Total Benefit / 总利益</label>
-                            <label><input type="checkbox" checked data-col="11" id="cbComp"> Comparison / 对比</label>
-                            <label><input type="checkbox" checked data-col="10"> Return % / 回报率</label>
+                <!-- 2. Withdrawal Module -->
+                <div class="input-box withdrawal-box">
+                    <div class="input-box-header">2. 提取设置 / Withdrawal Module</div>
+                    <table class="ls-table">
+                        <thead>
+                            <tr>
+                                <th>年龄 / Age</th>
+                                <th>单次提取 / Lump Sum (S$)</th>
+                                <th style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="lumpSumBody"></tbody>
+                    </table>
+                    <button class="add-ls-btn" onclick="addLumpSum()">+ 添加单次提取 / Add Lump Sum</button>
+                    
+                    <hr class="input-divider">
+                    
+                    <div class="input-group">
+                        <label>定期提取 / Periodic Withdrawal (S$ p.a.)</label>
+                        <input type="number" id="periodicAmount" value="0" min="0" step="1000">
+                    </div>
+                    <div class="input-grid-2">
+                        <div class="input-group">
+                            <label>由 / From Age</label>
+                            <input type="number" id="periodicStartAge" value="65" min="40" max="100">
+                        </div>
+                        <div class="input-group">
+                            <label>至 / To Age</label>
+                            <input type="number" id="periodicEndAge" value="85" min="40" max="100">
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="withdraw-box">
-                <label>2. Withdrawal Module / 提取模块</label>
-                <table class="ls-table">
-                    <thead><tr><th>Age</th><th>Amount ($)</th><th></th></tr></thead>
-                    <tbody id="lsBody"></tbody>
-                </table>
-                <button class="btn-add-ls" onclick="addLsRow()">+ Add Lump Sum / 添加单笔</button>
-                <hr style="border:0; border-top:1px solid #fecaca; margin:12px 0;">
-                <div class="input-group"><label>Periodic Withdrawal / 定期提取</label><input type="number" id="pAmt" value="0" oninput="calc()"></div>
-                <div style="display: flex; gap: 8px;">
-                    <input type="number" id="pStart" value="65" oninput="calc()" placeholder="From">
-                    <input type="number" id="pEnd" value="85" oninput="calc()" placeholder="To">
+                <!-- 3. Market Scenarios -->
+                <div class="input-box">
+                    <div class="input-box-header">3. 市场假设 / Market Scenarios</div>
+                    <div class="input-group">
+                        <label>累计期增长率 / Accumulation Return (%)</label>
+                        <input type="number" id="accumGrowthRate" value="8.0" min="0" max="20" step="0.1">
+                    </div>
+                    <div id="incomeGrowthGroup" class="input-group">
+                        <label>收益期增长率 / Income Return (%)</label>
+                        <input type="number" id="incomeGrowthRate" value="8.0" min="0" max="20" step="0.1">
+                    </div>
+                    <div id="dividendYieldGroup" class="input-group">
+                        <label>分红率 / Dividend Yield (%)</label>
+                        <input type="number" id="dividendYield" value="7.0" min="0" max="15" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>手动管理费 / Manual Fund Management Charge (%)</label>
+                        <input type="number" id="fmcRate" value="1.45" min="0" max="5" step="0.01">
+                    </div>
+                    
+                    <hr class="input-divider">
+                    
+                    <label class="comparison-toggle">
+                        <input type="checkbox" id="enableComparison">
+                        开启对比模式 / Enable Comparison Mode
+                    </label>
+                    <div id="comparisonRateGroup" class="input-group hidden">
+                        <label>对比利率 / Comparison Rate (%)</label>
+                        <input type="number" id="comparisonRate" value="1.5" min="0" max="10" step="0.1">
+                    </div>
                 </div>
             </div>
 
-            <div class="market-box">
-                <label>3. Market Assumptions / 市场假设</label>
-                <div class="input-group"><label>Accumulation Return (%)</label><input type="number" id="rIn" value="8.0" oninput="calc()"></div>
-                <div id="incomeMarketGroup" class="input-group hidden"><label>Income Return (%)</label><input type="number" id="postRIn" value="8.0" oninput="calc()"></div>
-                <div class="input-group"><label>AMC / 管理费 (%)</label><input type="number" id="fmcIn" value="1.45" oninput="calc()"></div>
-                <div id="divYieldGroup" class="input-group hidden"><label>Div. Yield (%)</label><input type="number" id="dIn" value="7.0" oninput="calc()"></div>
+            <!-- STATISTIC BAR (The Big Numbers) -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <span class="stat-label-cn">总已付保费</span>
+                    <span class="stat-label">Total Outlay</span>
+                    <span class="stat-value" id="statOutlay">$0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label-cn">账户价值</span>
+                    <span class="stat-label">Account Value</span>
+                    <span class="stat-value" id="statPolicyValue">$0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label-cn">累计分红</span>
+                    <span class="stat-label">Total Dividends</span>
+                    <span class="stat-value" id="statDividends">$0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label-cn">累计提取</span>
+                    <span class="stat-label">Total Withdrawals</span>
+                    <span class="stat-value" id="statWithdrawals">$0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label-cn">总利益</span>
+                    <span class="stat-label">Total Benefit</span>
+                    <span class="stat-value" id="statTotalBenefit">$0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label-cn">增值倍数</span>
+                    <span class="stat-label">Multiplier</span>
+                    <span class="stat-value" id="statMultiplier">0x</span>
+                </div>
             </div>
-        </div>
 
-        <div class="stats-bar">
-            <div class="stat-card"><span class="cn-sub">Total Paid</span><span id="sOut" class="stat-val">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Policy Value</span><span id="sVal" class="stat-val">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Total Payouts</span><span id="sCash" class="stat-val">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Total Benefit</span><span id="sTot" class="stat-val">$0</span></div>
-            <div class="stat-card"><span class="cn-sub">Return %</span><span id="sPerc" class="stat-val">0%</span></div>
-            <div class="stat-card" style="background:var(--gold); color:var(--navy);"><span class="cn-sub">Multiplier</span><span id="sMult" class="stat-val" style="color:var(--navy)">0x</span></div>
-        </div>
+            <!-- CHART DESIGN (Cumulative vs Liquid) -->
+            <canvas id="mainChart"></canvas>
 
-        <canvas id="mainChart" style="max-height: 290px; margin-bottom: 20px;"></canvas>
+            <!-- TABLE ENGINEERING (The Data Core) -->
+            <div class="table-wrapper">
+                <table id="mainTable">
+                    <thead>
+                        <tr id="tableHeaderRow">
+                            <th style="width: 90px;">Year/Age<br>年份/年龄</th>
+                            <th class="col-premium">Premium<br>保费</th>
+                            <th class="col-welcome">Welcome<br>Bonus<br>开户奖金</th>
+                            <th class="col-invest">Investment<br>Bonus<br>投资奖金</th>
+                            <th class="col-charges">Charges<br>费用</th>
+                            <th class="col-dividend hidden">Dividend<br>分红</th>
+                            <th class="col-withdrawal hidden">Withdrawal<br>提取</th>
+                            <th>Account Value<br>账户价值</th>
+                            <th class="col-comparison hidden">Comp. Value<br>对比场景</th>
+                            <th>Total Benefit<br>总利益</th>
+                            <th style="width: 100px;">Return %<br>回报率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
 
-        <table id="mainTable">
-            <thead>
-                <tr>
-                    <th>Year / Age<br>年份/年龄</th>
-                    <th data-col="2">Premium<br>保费</th>
-                    <th data-col="3">Welcome Bonus<br>开户奖金</th>
-                    <th data-col="4">Invest Bonus<br>投资奖金</th>
-                    <th data-col="5">Charges<br>费用</th>
-                    <th data-col="6">Dividend<br>年度分红</th>
-                    <th data-col="7">Withdrawal<br>年度提取</th>
-                    <th data-col="8">Policy Val<br>保单价值</th>
-                    <th data-col="9">Total Benefit<br>总利益</th>
-                    <th data-col="11">Comparison<br>对比数据</th>
-                    <th data-col="10">Return %<br>回报率</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-
-        <div class="disclaimer-box">
-            <strong>一般免责声明 / General Disclaimer:</strong><br>
-            本演示仅供参考。实际数据将根据市场表现而有所不同。请参阅保险合同了解完整条款。<br>
-            This is for illustration purposes only. Actual numbers will vary based on market performance. Refer to contract.
+            <!-- DISCLAIMER (Centered) -->
+            <div class="disclaimer">
+                <strong>免责声明 / General Disclaimer:</strong><br>
+                本演示仅供参考。实际数据将根据市场表现而有所不同。请参阅保险合同了解完整条款。<br>
+                This is for illustration purposes only. Actual numbers will vary based on market performance. Refer to contract.
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const SECRET_CODE = "wesion7";
-    let chart;
+// ==================== GLOBAL VARIABLES ====================
+const SECRET_PASSWORD = "wesion7";
+let chartInstance = null;
 
-    // 1. Password Verification & Initialization
-    function init() {
-        document.getElementById('displayDate').innerText = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-        document.getElementById('passInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkPass(); });
-        toggleInputs();
+// ==================== INITIALIZATION ====================
+window.addEventListener('DOMContentLoaded', () => {
+    setReportDate();
+    setupEventListeners();
+    document.getElementById('passInput').focus();
+});
+
+function setReportDate() {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('reportDate').textContent = `Analysis Date: ${now.toLocaleDateString('en-US', options)}`;
+}
+
+function setupEventListeners() {
+    // Password input - Enter key support
+    document.getElementById('passInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkPassword();
+    });
+
+    // All input fields trigger calculation
+    const inputs = [
+        'premiumInput', 'ageInput', 'displayUntilAge',
+        'strategySelect', 'switchAgeInput', 'accumGrowthRate', 'incomeGrowthRate',
+        'dividendYield', 'fmcRate', 'periodicAmount', 'periodicStartAge', 'periodicEndAge',
+        'comparisonRate'
+    ];
+    
+    inputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', handleInputChange);
+            element.addEventListener('change', handleInputChange);
+        }
+    });
+
+    // Strategy select
+    document.getElementById('strategySelect').addEventListener('change', updateStrategyVisibility);
+
+    // Comparison checkbox
+    document.getElementById('enableComparison').addEventListener('change', updateComparisonVisibility);
+
+    // Column toggles
+    document.querySelectorAll('.col-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', updateColumnVisibility);
+    });
+}
+
+function handleInputChange() {
+    updateStrategyVisibility();
+    calculateProjection();
+}
+
+// ==================== AUTHENTICATION ====================
+function checkPassword() {
+    const password = document.getElementById('passInput').value;
+    const errorMsg = document.getElementById('errorMsg');
+    
+    if (password === SECRET_PASSWORD) {
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('mainCard').classList.remove('hidden');
+        calculateProjection();
+    } else {
+        errorMsg.style.visibility = 'visible';
+        document.getElementById('passInput').value = '';
+        document.getElementById('passInput').focus();
+        setTimeout(() => {
+            errorMsg.style.visibility = 'hidden';
+        }, 3000);
+    }
+}
+
+// ==================== UI CONTROLS ====================
+function toggleColumnManager() {
+    const content = document.getElementById('colManagerContent');
+    content.style.display = content.style.display === 'block' ? 'none' : 'block';
+}
+
+function updateStrategyVisibility() {
+    const strategy = document.getElementById('strategySelect').value;
+    
+    // Income Return %: Only visible when "Accumulate then Income" is selected
+    const incomeGroup = document.getElementById('incomeGrowthGroup');
+    incomeGroup.classList.toggle('hidden', strategy !== 'switch');
+    
+    // Dividend Yield %: Visible only for "Accumulate then Income" or "Immediate Income"
+    const dividendGroup = document.getElementById('dividendYieldGroup');
+    dividendGroup.classList.toggle('hidden', strategy === 'reinvest');
+    
+    // Switch age: Only for "Accumulate then Income"
+    const switchGroup = document.getElementById('switchAgeGroup');
+    switchGroup.classList.toggle('hidden', strategy !== 'switch');
+}
+
+function updateComparisonVisibility() {
+    const enabled = document.getElementById('enableComparison').checked;
+    document.getElementById('comparisonRateGroup').classList.toggle('hidden', !enabled);
+    calculateProjection();
+}
+
+function updateColumnVisibility() {
+    const toggles = document.querySelectorAll('.col-toggle');
+    toggles.forEach(toggle => {
+        const colName = toggle.dataset.col;
+        const isChecked = toggle.checked;
+        
+        // Update table header and body cells
+        document.querySelectorAll(`.col-${colName}`).forEach(el => {
+            el.classList.toggle('hidden', !isChecked);
+        });
+        
+        document.querySelectorAll(`.td-${colName}`).forEach(el => {
+            el.classList.toggle('hidden', !isChecked);
+        });
+    });
+}
+
+function addLumpSum() {
+    const tbody = document.getElementById('lumpSumBody');
+    const row = tbody.insertRow();
+    
+    row.innerHTML = `
+        <td><input type="number" class="ls-age" value="50" min="40" max="100"></td>
+        <td><input type="number" class="ls-amount" value="10000" min="0" step="1000"></td>
+        <td><button class="ls-delete-btn" onclick="deleteLumpSum(this)">×</button></td>
+    `;
+    
+    // Add event listeners to new inputs
+    row.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', calculateProjection);
+    });
+    
+    calculateProjection();
+}
+
+function deleteLumpSum(button) {
+    button.closest('tr').remove();
+    calculateProjection();
+}
+
+function clearAllData() {
+    // Clear All shouldn't trigger password re-entry
+    document.getElementById('premiumInput').value = 10000;
+    document.getElementById('ageInput').value = 40;
+    document.getElementById('displayUntilAge').value = 80;
+    document.getElementById('strategySelect').value = 'switch';
+    document.getElementById('switchAgeInput').value = 65;
+    document.getElementById('accumGrowthRate').value = 8.0;
+    document.getElementById('incomeGrowthRate').value = 8.0;
+    document.getElementById('dividendYield').value = 7.0;
+    document.getElementById('fmcRate').value = 1.45;
+    document.getElementById('periodicAmount').value = 0;
+    document.getElementById('periodicStartAge').value = 65;
+    document.getElementById('periodicEndAge').value = 85;
+    document.getElementById('enableComparison').checked = false;
+    document.getElementById('comparisonRate').value = 1.5;
+    document.getElementById('clientName').value = 'VALUED CLIENT';
+    
+    // Clear lump sum table
+    document.getElementById('lumpSumBody').innerHTML = '';
+    
+    // Update UI
+    updateStrategyVisibility();
+    updateComparisonVisibility();
+    calculateProjection();
+}
+
+// ==================== MAIN CALCULATION - AWV FORMULAS ====================
+function calculateProjection() {
+    // Get all inputs
+    const premium = parseFloat(document.getElementById('premiumInput').value) || 0;
+    const startAge = parseInt(document.getElementById('ageInput').value) || 40;
+    const displayUntil = parseInt(document.getElementById('displayUntilAge').value) || 100;
+    const strategy = document.getElementById('strategySelect').value;
+    const switchAge = parseInt(document.getElementById('switchAgeInput').value) || 65;
+    const accumRate = parseFloat(document.getElementById('accumGrowthRate').value) / 100 || 0.08;
+    const incomeRate = parseFloat(document.getElementById('incomeGrowthRate').value) / 100 || 0.08;
+    const divYield = parseFloat(document.getElementById('dividendYield').value) / 100 || 0.07;
+    const fmc = parseFloat(document.getElementById('fmcRate').value) / 100 || 0.0145;
+    const periodicAmt = parseFloat(document.getElementById('periodicAmount').value) || 0;
+    const periodicStart = parseInt(document.getElementById('periodicStartAge').value) || 65;
+    const periodicEnd = parseInt(document.getElementById('periodicEndAge').value) || 85;
+    const compEnabled = document.getElementById('enableComparison').checked;
+    const compRate = parseFloat(document.getElementById('comparisonRate').value) / 100 || 0.015;
+
+    // Get lump sum withdrawals
+    const lumpSums = {};
+    document.querySelectorAll('#lumpSumBody tr').forEach(row => {
+        const age = parseInt(row.querySelector('.ls-age').value);
+        const amount = parseFloat(row.querySelector('.ls-amount').value) || 0;
+        if (age && amount > 0) {
+            lumpSums[age] = (lumpSums[age] || 0) + amount;
+        }
+    });
+
+    // Net growth rates (growth minus FMC)
+    const netAccumRate = accumRate - fmc;
+    const netIncomeRate = incomeRate - fmc;
+
+    // Welcome bonus tiers based on AIA AWV
+    let welcomeBonus = [0, 0, 0, 0, 0];
+    if (premium >= 12000) {
+        welcomeBonus = [0.03, 0.05, 0.07, 0.09, 0.11];
+    } else if (premium >= 9000) {
+        welcomeBonus = [0.03, 0.04, 0.05, 0.07, 0.07];
+    } else {
+        welcomeBonus = [0.01, 0.03, 0.05, 0.07, 0];
     }
 
-    function checkPass() {
-        if (document.getElementById('passInput').value === SECRET_CODE) {
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('mainCard').classList.remove('hidden');
-            calc();
-        } else { document.getElementById('errorMsg').style.display = 'block'; }
-    }
+    // Initialize tracking variables
+    let policyValue = 0;
+    let comparisonValue = 0;
+    let totalPremiumPaid = 0;
+    let totalDividends = 0;
+    let totalWithdrawals = 0;
+    let terminated = false;
+    let hasDividendData = false;
+    let hasWithdrawalData = false;
 
-    // 5. Column Manager Logic
-    function toggleColBox(e) { e.stopPropagation(); const box = document.getElementById('colBox'); box.style.display = box.style.display === 'block' ? 'none' : 'block'; }
-    window.onclick = () => document.getElementById('colBox').style.display = 'none';
-    document.querySelectorAll('#colBox input').forEach(cb => cb.addEventListener('change', () => { calc(); }));
+    // Arrays for chart
+    const chartLabels = [];
+    const chartPolicyValues = [];
+    const chartTotalBenefits = [];
+    const chartOutlays = [];
+    const chartCompValues = [];
 
-    function addLsRow() {
-        const row = document.getElementById('lsBody').insertRow();
-        row.innerHTML = `<td><input type="number" class="ls-age" value="65" oninput="calc()" style="width:45px;"></td>
-                         <td><input type="number" class="ls-val" value="10000" oninput="calc()" style="width:85px;"></td>
-                         <td><button onclick="this.parentElement.parentElement.remove(); calc();" style="border:none;background:none;color:red;cursor:pointer;">×</button></td>`;
-        calc();
-    }
+    // Table HTML
+    let tableHTML = '';
 
-    // 8. Conditional visibility logic
-    function toggleInputs() {
-        const s = document.getElementById('strat').value;
-        document.getElementById('switchGroup').classList.toggle('hidden', s !== 'switch');
-        document.getElementById('incomeMarketGroup').classList.toggle('hidden', s !== 'switch');
-        document.getElementById('divYieldGroup').classList.toggle('hidden', s === 'reinvest');
-        calc();
-    }
+    // Calculate year by year (Display Until Age option)
+    const maxYears = Math.min(displayUntil - startAge, 60);
+    
+    for (let year = 1; year <= maxYears && !terminated; year++) {
+        const currentAge = startAge + year;
+        
+        // Premium payment (years 1-8 only for AWV - 8-Pay)
+        const yearPremium = year <= 8 ? premium : 0;
+        totalPremiumPaid += yearPremium;
+        policyValue += yearPremium;
+        comparisonValue = (comparisonValue + yearPremium) * (1 + compRate);
 
-    function calc() {
-        const p = parseFloat(document.getElementById('pIn').value) || 0, startAge = parseInt(document.getElementById('ageIn').value) || 0;
-        const maxAge = parseInt(document.getElementById('maxAgeIn').value) || 100;
-        const fmc = parseFloat(document.getElementById('fmcIn').value)/100, r1 = parseFloat(document.getElementById('rIn').value)/100, r2 = parseFloat(document.getElementById('postRIn').value)/100;
-        const strat = document.getElementById('strat').value, divYield = parseFloat(document.getElementById('dIn').value)/100, sAge = parseInt(document.getElementById('switchAge').value);
-        const compEnable = document.getElementById('compEnable').checked, compR = parseFloat(document.getElementById('compRate').value)/100;
-        const pAmt = parseFloat(document.getElementById('pAmt').value) || 0, pStart = parseInt(document.getElementById('pStart').value), pEnd = parseInt(document.getElementById('pEnd').value);
+        // Welcome bonus (years 1-5 only)
+        const welcome = (year <= 5) ? premium * welcomeBonus[year - 1] : 0;
+        policyValue += welcome;
 
-        document.getElementById('compGroup').classList.toggle('hidden', !compEnable);
-        let lsMap = {}; document.querySelectorAll('#lsBody tr').forEach(row => { const a = row.querySelector('.ls-age').value; if (a) lsMap[a] = (lsMap[a] || 0) + (parseFloat(row.querySelector('.ls-val').value) || 0); });
+        // Investment bonus (years 9-12, 2.5% of annual premium)
+        const investBonus = (year >= 9 && year <= 12) ? premium * 0.025 : 0;
+        
+        // Performance bonus (year 9 onwards, 0.3% of policy value)
+        const perfBonus = (year >= 9) ? policyValue * 0.003 : 0;
+        
+        policyValue += investBonus + perfBonus;
+        const totalInvestBonus = investBonus + perfBonus;
 
-        let lbs = [], pVals = [], tBenefits = [], compVals = [], h = "", tPaid = 0, tCash = 0, curV = 0, curComp = 0, term = false, anyDiv = false, anyWD = false;
+        // Apply net growth (already includes FMC deduction)
+        const inIncomePhase = (strategy === 'switch' && currentAge >= switchAge) || strategy === 'immediate';
+        const growthRate = inIncomePhase ? netIncomeRate : netAccumRate;
+        
+        policyValue *= (1 + growthRate);
 
-        for (let y = 1; y <= 60; y++) {
-            if (term) break;
-            let age = startAge + y; 
-            if (age > maxAge || age > 100) break; // Apply Display Age truncation
+        // Supplementary charges (years 1-10, 3.6% of policy value after growth)
+        const suppCharge = year <= 10 ? policyValue * 0.036 : 0;
+        policyValue -= suppCharge;
 
-            let curP = (y <= 8) ? p : 0; tPaid += curP; curV += curP; curComp = (curComp + curP) * (1 + compR);
-
-            let wb = (y <= 5) ? p * (p >= 12000 ? [0.03,0.05,0.07,0.09,0.11][y-1] : (p >= 9000 ? [0.03,0.04,0.05,0.07,0.07][y-1] : [0.01,0.03,0.05,0.07,0][y-1])) : 0;
-            let ib = (y >= 9 && y <= 12) ? p * 0.025 : 0, pb = (y >= 9) ? curV * 0.003 : 0;
-            curV += (wb + ib + pb);
-
-            let netR = (strat === 'switch' && age >= sAge) ? r2 : r1;
-            curV *= (1 + netR - fmc);
-            let sc = (y <= 10) ? curV * 0.036 : 0; curV -= sc;
-
-            let div = 0, wd = 0;
-            if (strat !== 'reinvest' && (strat === 'cash' || (strat === 'switch' && age >= sAge))) { div = Math.floor(curV * divYield); if(div > 0) anyDiv = true; }
-            if (lsMap[age]) { wd += lsMap[age]; anyWD = true; }
-            if (age >= pStart && age <= pEnd) { wd += pAmt; anyWD = true; }
-
-            if (curV - (div + wd) <= 0) { wd = curV - div; curV = 0; term = true; } else { curV -= (div + wd); }
-            tCash += (div + wd);
-
-            lbs.push(age); pVals.push(Math.round(curV)); tBenefits.push(Math.round(curV + tCash)); compVals.push(Math.round(curComp));
-
-            h += `<tr onclick="this.classList.toggle('row-selected')">
-                <td style="font-weight:bold">${y}/${age}</td>
-                <td data-col="2" style="color:var(--navy)">$${curP.toLocaleString()}</td>
-                <td data-col="3">+$${Math.round(wb).toLocaleString()}</td>
-                <td data-col="4">+$${Math.round(ib+pb).toLocaleString()}</td>
-                <td data-col="5" style="color:var(--aia-red)">-$${Math.round(sc).toLocaleString()}</td>
-                <td data-col="6" style="color:var(--emerald)">$${Math.round(div).toLocaleString()}</td>
-                <td data-col="7" style="color:var(--amber)">$${Math.round(wd).toLocaleString()}</td>
-                <td data-col="8" style="color:var(--aia-red); font-weight:bold">$${Math.round(curV).toLocaleString()}</td>
-                <td data-col="9" class="total-row-cell">$${Math.round(curV + tCash).toLocaleString()}</td>
-                <td data-col="11" class="comp-col">$${Math.round(curComp).toLocaleString()}</td>
-                <td data-col="10">${tPaid > 0 ? Math.round((curV+tCash)/tPaid*100) : 0}%</td></tr>`;
+        // Dividends - Dividend and Withdrawal now have their own dedicated columns
+        let yearDividend = 0;
+        if (strategy !== 'reinvest') {
+            if (strategy === 'immediate' || (strategy === 'switch' && currentAge >= switchAge)) {
+                yearDividend = policyValue * divYield;
+                policyValue -= yearDividend;
+                totalDividends += yearDividend;
+                if (yearDividend > 0) hasDividendData = true;
+            }
         }
 
-        document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('sOut').innerText = "$" + tPaid.toLocaleString();
-        document.getElementById('sVal').innerText = "$" + (pVals[pVals.length-1] || 0).toLocaleString();
-        document.getElementById('sCash').innerText = "$" + tCash.toLocaleString();
-        document.getElementById('sTot').innerText = "$" + (tBenefits[tBenefits.length-1] || 0).toLocaleString();
-        document.getElementById('sPerc').innerText = tPaid > 0 ? Math.round((tBenefits[tBenefits.length-1])/tPaid*100) + "%" : "0%";
-        document.getElementById('sMult').innerText = tPaid > 0 ? (tBenefits[tBenefits.length-1]/tPaid).toFixed(1) + "x" : "0x";
+        // Withdrawals - separate from dividends
+        let yearWithdrawal = 0;
+        if (lumpSums[currentAge]) yearWithdrawal += lumpSums[currentAge];
+        if (currentAge >= periodicStart && currentAge <= periodicEnd) {
+            yearWithdrawal += periodicAmt;
+        }
 
-        // 9. Adaptive Column Logic Verified
-        document.querySelectorAll('#colBox input').forEach(cb => {
-            const idx = cb.getAttribute('data-col');
-            let isVis = cb.checked;
-            if (idx == "6") isVis = cb.checked && anyDiv;
-            if (idx == "7") isVis = cb.checked && anyWD;
-            if (idx == "11") isVis = cb.checked && compEnable;
-            document.querySelectorAll(`[data-col="${idx}"]`).forEach(c => c.style.display = isVis ? '' : 'none');
+        if (yearWithdrawal > 0) {
+            hasWithdrawalData = true;
+            yearWithdrawal = Math.min(yearWithdrawal, policyValue);
+            policyValue -= yearWithdrawal;
+            totalWithdrawals += yearWithdrawal;
+        }
+
+        // Check for termination
+        if (policyValue <= 0) {
+            terminated = true;
+            policyValue = 0;
+        }
+
+        // Round values for display (round to nearest 100 as AIA does)
+        const displayPolicyValue = Math.round(policyValue / 100) * 100;
+        const displayTotalBenefit = Math.round((policyValue + totalDividends + totalWithdrawals) / 100) * 100;
+        const displayCompValue = Math.round(comparisonValue / 100) * 100;
+        const returnPct = totalPremiumPaid > 0 ? Math.round((displayTotalBenefit / totalPremiumPaid) * 100) : 0;
+
+        // Store chart data
+        chartLabels.push(currentAge);
+        chartPolicyValues.push(displayPolicyValue);
+        chartTotalBenefits.push(displayTotalBenefit);
+        chartOutlays.push(totalPremiumPaid);
+        chartCompValues.push(displayCompValue);
+
+        // Generate table row with Click-to-highlight functionality
+        const isHighlightRow = (strategy === 'switch' && currentAge === switchAge);
+        tableHTML += `
+            <tr class="${isHighlightRow ? 'highlight-switch' : ''}" onclick="this.classList.toggle('row-click-highlight')">
+                <td style="font-weight:700;color:var(--navy)">${year}/${currentAge}</td>
+                <td class="td-premium" style="color:var(--navy);font-weight:600">${formatCurrency(yearPremium)}</td>
+                <td class="td-welcome" style="color:var(--emerald);font-weight:600">${formatCurrency(welcome)}</td>
+                <td class="td-invest" style="color:var(--emerald);font-weight:600">${formatCurrency(totalInvestBonus)}</td>
+                <td class="td-charges" style="color:var(--aia-red)">-${formatCurrency(suppCharge)}</td>
+                <td class="col-dividend" style="color:var(--emerald);font-weight:600">${formatCurrency(yearDividend)}</td>
+                <td class="col-withdrawal" style="color:var(--amber);font-weight:600">${formatCurrency(yearWithdrawal)}</td>
+                <td style="font-weight:700;color:var(--aia-red)">${formatCurrency(displayPolicyValue)}</td>
+                <td class="col-comparison comp-col">${formatCurrency(displayCompValue)}</td>
+                <td class="total-benefit-col">${formatCurrency(displayTotalBenefit)}</td>
+                <td style="font-weight:700;color:var(--navy)">${terminated ? '❌ Term.' : returnPct + '%'}</td>
+            </tr>
+        `;
+    }
+
+    // Update table
+    document.getElementById('tableBody').innerHTML = tableHTML;
+
+    // Update stats
+    const finalPolicyValue = chartPolicyValues[chartPolicyValues.length - 1] || 0;
+    const finalTotalBenefit = chartTotalBenefits[chartTotalBenefits.length - 1] || 0;
+    const multiplier = totalPremiumPaid > 0 ? (finalTotalBenefit / totalPremiumPaid).toFixed(1) : '0.0';
+
+    document.getElementById('statOutlay').textContent = formatCurrency(totalPremiumPaid);
+    document.getElementById('statPolicyValue').textContent = formatCurrency(finalPolicyValue);
+    document.getElementById('statDividends').textContent = formatCurrency(totalDividends);
+    document.getElementById('statWithdrawals').textContent = formatCurrency(totalWithdrawals);
+    document.getElementById('statTotalBenefit').textContent = formatCurrency(finalTotalBenefit);
+    document.getElementById('statMultiplier').textContent = multiplier + 'x';
+
+    // Smart Auto-Hide: These columns will only appear if there is a non-zero value
+    document.querySelectorAll('.col-dividend').forEach(el => {
+        el.classList.toggle('hidden', !hasDividendData);
+    });
+    document.querySelectorAll('.col-withdrawal').forEach(el => {
+        el.classList.toggle('hidden', !hasWithdrawalData);
+    });
+    
+    // Comparison Mode: When enabled, new line in chart and column in table
+    document.querySelectorAll('.col-comparison').forEach(el => {
+        el.classList.toggle('hidden', !compEnabled);
+    });
+
+    updateColumnVisibility();
+    updateChart(chartLabels, chartPolicyValues, chartTotalBenefits, chartOutlays, chartCompValues, compEnabled, hasDividendData || hasWithdrawalData);
+}
+
+// ==================== CHART DESIGN (Cumulative vs Liquid) ====================
+function updateChart(labels, policyValues, totalBenefits, outlays, compValues, showComparison, hasPayouts) {
+    const ctx = document.getElementById('mainChart');
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    // If policy value = total benefit, only show total benefit
+    const valuesAreSame = !hasPayouts;
+
+    const datasets = [];
+
+    // Only show separate lines if they differ
+    if (!valuesAreSame) {
+        // Total Benefit (Solid Emerald with fill)
+        datasets.push({
+            label: 'Total Benefit (总利益)',
+            data: totalBenefits,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3
         });
-
-        if (chart) chart.destroy();
-        chart = new Chart(document.getElementById('mainChart'), { 
-            type: 'line', data: { labels: lbs, datasets: [
-                { label: 'Total Benefit / 总利益', data: tBenefits, borderColor: '#10b981', fill: true, backgroundColor: 'rgba(16, 185, 129, 0.05)', tension: 0.1 },
-                { label: 'Policy Value / 保单价值', data: pVals, borderColor: '#d31145', borderDash: [5, 5], tension: 0.1 },
-                { label: 'Total Outlay / 总保费', data: lbs.map(() => tPaid), borderColor: '#2c3e50', borderDash: [2, 2], pointRadius: 0 },
-                compEnable ? { label: 'Comparison Scenario', data: compVals, borderColor: '#2196f3', borderDash: [1, 1], pointRadius: 0 } : null
-            ].filter(d => d) }, options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false } } 
+        // Policy Value (Dashed Red)
+        datasets.push({
+            label: 'Policy Value (保单价值)',
+            data: policyValues,
+            borderColor: '#d31145',
+            borderDash: [5, 5],
+            fill: false,
+            tension: 0.3,
+            borderWidth: 2
+        });
+    } else {
+        // Combined line when values are same
+        datasets.push({
+            label: 'Total Benefit / Policy Value',
+            data: policyValues,
+            borderColor: '#d31145',
+            backgroundColor: 'rgba(211, 17, 69, 0.05)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3
         });
     }
 
-    // 11. Clear all logic - verified no password reset
-    function clearAll() {
-        document.getElementById('clientName').value = "VALUED CLIENT";
-        document.getElementById('pIn').value = 10000;
-        document.getElementById('ageIn').value = 40;
-        document.getElementById('maxAgeIn').value = 80;
-        document.getElementById('strat').value = "switch";
-        document.getElementById('compEnable').checked = false;
-        document.getElementById('lsBody').innerHTML = "";
-        document.getElementById('pAmt').value = 0;
-        toggleInputs();
+    // Total Outlay (Dotted Navy)
+    datasets.push({
+        label: 'Total Outlay (本金)',
+        data: outlays,
+        borderColor: '#2c3e50',
+        borderDash: [8, 4],
+        pointRadius: 0,
+        tension: 0,
+        borderWidth: 2
+    });
+
+    // Comparison (Blue dashed) - Comparison Tool
+    if (showComparison) {
+        datasets.push({
+            label: 'Comparison (对比)',
+            data: compValues,
+            borderColor: '#3b82f6',
+            borderDash: [3, 3],
+            pointRadius: 0,
+            tension: 0.3,
+            borderWidth: 2
+        });
     }
 
-    function downloadPDF() {
-        const opt = { margin: 0.2, filename: `Wealth_Venture_Wesion_Report.pdf`, jsPDF: { format: 'a4', orientation: 'landscape' } };
-        html2pdf().set(opt).from(document.getElementById('pdfContent')).save();
-    }
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: 'IBM Plex Sans',
+                            size: 12,
+                            weight: '600'
+                        },
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                    titleFont: {
+                        family: 'IBM Plex Sans',
+                        size: 13,
+                        weight: '700'
+                    },
+                    bodyFont: {
+                        family: 'IBM Plex Sans',
+                        size: 12
+                    },
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f1f5f9'
+                    },
+                    ticks: {
+                        font: {
+                            family: 'IBM Plex Sans',
+                            size: 11
+                        },
+                        callback: function(value) {
+                            return formatCurrency(value);
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            family: 'IBM Plex Sans',
+                            size: 11
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ==================== UTILITIES ====================
+function formatCurrency(value) {
+    if (value === 0) return '$0';
+    return '$' + Math.round(value).toLocaleString('en-US');
+}
+
+// ==================== PDF EXPORT (Landscape Orientation) ====================
+function downloadPDF() {
+    const element = document.getElementById('pdfContent');
+    const clientName = document.getElementById('clientName').value.replace(/\s+/g, '_') || 'Client';
+    const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `AWV_Analysis_${clientName}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+}
 </script>
+
 </body>
 </html>
