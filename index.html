@@ -716,6 +716,45 @@
             </div>
 
             <!-- INPUT ECOSYSTEM (3-Column Grid) -->
+            <div class="no-print" style="margin-bottom: 20px;">
+                <button onclick="toggleBonusInfo()" style="width: 100%; padding: 15px 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #bae6fd; border-radius: 12px; cursor: pointer; text-align: left; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.3s; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="color: var(--navy); font-size: 16px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">🎁</span> AIA Wealth Venture - Product Bonuses Overview
+                    </h3>
+                    <span id="bonusToggleIcon" style="font-size: 20px; color: var(--navy); font-weight: bold;">▼</span>
+                </button>
+                <div id="bonusInfoContent" style="display: none; margin-top: 15px; padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #bae6fd; border-top: none; border-radius: 0 0 12px 12px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; font-size: 13px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--emerald);">
+                            <div style="font-weight: 700; color: var(--emerald); margin-bottom: 8px;">💰 Welcome Bonus (Years 1-5)</div>
+                            <div style="color: var(--slate-600); line-height: 1.6;">
+                                <strong>Premium ≥ $12,000:</strong><br>
+                                3%, 5%, 7%, 9%, 11%<br>
+                                <strong>Premium $9,000-$11,999:</strong><br>
+                                3%, 4%, 5%, 7%, 7%<br>
+                                <strong>Premium < $9,000:</strong><br>
+                                1%, 3%, 5%, 7%, 0%
+                            </div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--amber);">
+                            <div style="font-weight: 700; color: var(--amber); margin-bottom: 8px;">📈 Investment Bonus (Years 9-12)</div>
+                            <div style="color: var(--slate-600); line-height: 1.6;">
+                                <strong>2.5%</strong> of annual premium<br>
+                                Awarded each year from<br>
+                                policy year 9 to 12
+                            </div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--blue-500);">
+                            <div style="font-weight: 700; color: var(--blue-500); margin-bottom: 8px;">🚀 Performance Bonus (Year 9+)</div>
+                            <div style="color: var(--slate-600); line-height: 1.6;">
+                                <strong>0.3%</strong> of policy value<br>
+                                Awarded annually from<br>
+                                policy year 9 onwards
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="input-container no-print">
                 <!-- 1. Policy Parameters -->
                 <div class="input-box">
@@ -970,6 +1009,19 @@ function checkPassword() {
 }
 
 // ==================== UI CONTROLS ====================
+function toggleBonusInfo() {
+    const content = document.getElementById('bonusInfoContent');
+    const icon = document.getElementById('bonusToggleIcon');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        icon.textContent = '▲';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '▼';
+    }
+}
+
 function toggleColumnManager() {
     const content = document.getElementById('colManagerContent');
     content.style.display = content.style.display === 'block' ? 'none' : 'block';
