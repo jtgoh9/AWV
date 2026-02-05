@@ -754,12 +754,12 @@
                     <div class="input-group">
                         <label>策略 / Strategy</label>
                         <select id="strategySelect">
-                            <option value="reinvest">再投资 (累计) / Reinvest All</option>
-                            <option value="switch" selected>累计后收益 / Accumulate then Income</option>
+                            <option value="reinvest" selected>再投资 (累计) / Reinvest All</option>
+                            <option value="switch">累计后收益 / Accumulate then Income</option>
                             <option value="immediate">即刻提取现金 / Immediate Income</option>
                         </select>
                     </div>
-                    <div id="switchAgeGroup" class="input-group">
+                    <div id="switchAgeGroup" class="input-group hidden">
                         <label>收益开始年龄 / Income Start Age</label>
                         <input type="number" id="switchAgeInput" value="65" min="40" max="100">
                     </div>
@@ -814,11 +814,11 @@
                         <label>累计期增长率 / Accumulation Return (%)</label>
                         <input type="number" id="accumGrowthRate" value="8.0" min="0" max="20" step="0.1">
                     </div>
-                    <div id="incomeGrowthGroup" class="input-group">
+                    <div id="incomeGrowthGroup" class="input-group hidden">
                         <label>收益期增长率 / Income Return (%)</label>
                         <input type="number" id="incomeGrowthRate" value="8.0" min="0" max="20" step="0.1">
                     </div>
-                    <div id="dividendYieldGroup" class="input-group">
+                    <div id="dividendYieldGroup" class="input-group hidden">
                         <label>分红率 / Dividend Yield (%)</label>
                         <input type="number" id="dividendYield" value="7.0" min="0" max="15" step="0.1">
                     </div>
@@ -1070,7 +1070,7 @@ function clearAllData() {
     document.getElementById('premiumInput').value = 10000;
     document.getElementById('ageInput').value = 40;
     document.getElementById('displayUntilAge').value = 80;
-    document.getElementById('strategySelect').value = 'switch';
+    document.getElementById('strategySelect').value = 'reinvest';
     document.getElementById('switchAgeInput').value = 65;
     document.getElementById('accumGrowthRate').value = 8.0;
     document.getElementById('incomeGrowthRate').value = 8.0;
@@ -1178,6 +1178,7 @@ function calculateProjection() {
         
         policyValue += investBonus + perfBonus;
         const totalInvestBonus = investBonus + perfBonus;
+        const totalBonuses = welcome + totalInvestBonus;
 
         // Apply net growth (already includes FMC deduction)
         const inIncomePhase = (strategy === 'switch' && currentAge >= switchAge) || strategy === 'immediate';
@@ -1189,7 +1190,7 @@ function calculateProjection() {
         const suppCharge = year <= 10 ? policyValue * 0.036 : 0;
         policyValue -= suppCharge;
 
-        // Dividends - Dividend and Withdrawal now have their own dedicated columns
+        // Dividends - only deduct from policy value, track separately
         let yearDividend = 0;
         if (strategy !== 'reinvest') {
             if (strategy === 'immediate' || (strategy === 'switch' && currentAge >= switchAge)) {
@@ -1236,12 +1237,6 @@ function calculateProjection() {
         // Generate table row with Click-to-highlight functionality
         const isHighlightRow = (strategy === 'switch' && currentAge === switchAge);
         
-        // If policy value equals total benefit, only show total benefit column
-        const showSeparateColumns = displayPolicyValue !== displayTotalBenefit;
-        
-        // Combine all bonuses
-        const totalBonuses = welcome + totalInvestBonus;
-        
         tableHTML += `
             <tr class="${isHighlightRow ? 'highlight-switch' : ''}" onclick="this.classList.toggle('row-click-highlight')">
                 <td style="font-weight:700;color:var(--navy)">${year}/${currentAge}</td>
@@ -1250,7 +1245,7 @@ function calculateProjection() {
                 <td class="td-charges" style="color:var(--aia-red)">-${formatCurrency(suppCharge)}</td>
                 <td class="col-dividend" style="color:var(--emerald);font-weight:600">${formatCurrency(yearDividend)}</td>
                 <td class="col-withdrawal" style="color:var(--amber);font-weight:600">${formatCurrency(yearWithdrawal)}</td>
-                <td class="col-account-value" style="font-weight:700;color:var(--aia-red);${!showSeparateColumns ? 'display:none;' : ''}">${formatCurrency(displayPolicyValue)}</td>
+                <td class="col-account-value" style="font-weight:700;color:var(--aia-red)">${formatCurrency(displayPolicyValue)}</td>
                 <td class="col-comparison comp-col">${formatCurrency(displayCompValue)}</td>
                 <td class="total-benefit-col">${formatCurrency(displayTotalBenefit)}</td>
                 <td style="font-weight:700;color:var(--navy)">${terminated ? '❌ Term.' : returnPct + '%'}</td>
@@ -1285,12 +1280,16 @@ function calculateProjection() {
         }
     });
 
-    // Check if policy value equals total benefit across all rows
-    const valuesAreSame = finalPolicyValue === finalTotalBenefit && !hasDividendData && !hasWithdrawalData;
+    // Check if policy value equals total benefit GLOBALLY (not per row)
+    const valuesAreSameGlobally = finalPolicyValue === finalTotalBenefit && !hasDividendData && !hasWithdrawalData;
     
-    // Hide Account Value column header if values are the same
+    // Hide Account Value column header and all cells if values are the same globally
     document.querySelectorAll('.col-account-value-header').forEach(el => {
-        el.style.display = valuesAreSame ? 'none' : '';
+        el.style.display = valuesAreSameGlobally ? 'none' : '';
+    });
+    
+    document.querySelectorAll('.col-account-value').forEach(el => {
+        el.style.display = valuesAreSameGlobally ? 'none' : '';
     });
 
     // Smart Auto-Hide: These columns will only appear if there is a non-zero value
